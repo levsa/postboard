@@ -1,17 +1,41 @@
 'use strict';
 
 angular.module('postboardApp')
-  .controller('PostboardCtrl', function ($scope, $http, socket) {
-    var capture = "/files/2015-06-25/capture-EBC718E7-5C1D-4CC4-AD3E-3C1AF1332C51.json";
-    var sheet = "/files/2015-06-25/sheet-BAE285A1-638E-4544-A4E2-06941D1B19EC.json";
-    $http.get(sheet).success(function(sheetJson) {
-      $scope.sheetJson = sheetJson;
-      $scope.postIts = [];
-      sheetJson.clusters[0].notes.forEach(function (note) {
-        $scope.postIts.push({
-          "imgUrl": "files/2015-06-25/note-" + note.contentUUID + "-enhanced.jpg"
-        });
+.controller('PostboardCtrl', function ($scope, $window, $http) {
+
+  var fabric = $window.fabric;
+  var canvas = new fabric.Canvas('canvas');
+  $scope.canvas = canvas;
+
+  var sheet = '/files/2015-06-25/sheet-BAE285A1-638E-4544-A4E2-06941D1B19EC.json';
+  $http.get(sheet).success(function(sheetJson) {
+    $scope.sheetJson = sheetJson;
+    $scope.postIts = [];
+    sheetJson.clusters[0].notes.forEach(function (note) {
+      $scope.postIts.push({
+        'imgUrl': 'files/2015-06-25/note-' + note.contentUUID + '-enhanced.jpg',
+        'centerX': note.centerX,
+        'centerY': note.centerY,
+        'angle': note.layoutRotation
       });
-      //socket.syncUpdates('thing', $scope.sheetJson);
     });
+
+    $scope.postIts.forEach(function (postIt, index) {
+      console.log("loading postit: " + postIt.imgUrl);
+      fabric.Image.fromURL(postIt.imgUrl, function(img) {
+        img.set({
+          left: postIt.centerX,
+          top: postIt.centerY,
+          width: 100,
+          height: 100,
+          angle: postIt.angle
+        });
+        $scope.canvas.add(img);
+        $scope.canvas.renderAll();
+      });
+    });
+
+
+      //socket.syncUpdates('thing', $scope.sheetJson);
   });
+});
