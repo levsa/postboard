@@ -1,0 +1,11 @@
+'use strict';
+
+angular.module('postboardApp')
+  .config(function ($stateProvider) {
+    $stateProvider
+      .state('postboard', {
+        url: '/',
+        templateUrl: 'app/postboard/postboard.html',
+        controller: 'PostboardCtrl'
+      });
+  });
