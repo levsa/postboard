@@ -1,6 +1,8 @@
 // Generated on 2015-06-28 using generator-angular-fullstack 2.0.13
 'use strict';
 
+var mongoose = require('mongoose');
+
 module.exports = function (grunt) {
   var localConfig;
   try {
@@ -669,4 +671,24 @@ module.exports = function (grunt) {
     'test',
     'build'
   ]);
+
+  grunt.registerTask('drop', 'drop the database', function() {
+    // async mode
+    var done = this.async();
+    mongoose.connect('mongodb://localhost/test');
+    var postboard = mongoose.connection.useDb("postboard-dev");
+    postboard.on('open', function () {
+      console.log('Successfully opened db');
+      postboard.db.dropDatabase(function(err) {
+        if(err) {
+          console.log(err);
+        } else {
+          console.log('Successfully dropped db');
+        }
+        postboard.close();
+        mongoose.connection.close(done);
+      });
+    });
+  });
+
 };
