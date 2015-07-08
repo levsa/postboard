@@ -1,11 +1,11 @@
 'use strict';
 
 var _ = require('lodash');
-var Postboard = require('./postboard.model');
+var PostboardSheet = require('./postboard.model');
 
 // Get list of postboards
 exports.index = function(req, res) {
-  Postboard.find(function (err, postboards) {
+  PostboardSheet.find(function (err, postboards) {
     if(err) { return handleError(res, err); }
     return res.json(200, postboards);
   });
@@ -13,7 +13,7 @@ exports.index = function(req, res) {
 
 // Get a single postboard
 exports.show = function(req, res) {
-  Postboard.findById(req.params.id, function (err, postboard) {
+  PostboardSheet.findById(req.params.id, function (err, postboard) {
     if(err) { return handleError(res, err); }
     if(!postboard) { return res.send(404); }
     return res.json(postboard);
@@ -22,7 +22,7 @@ exports.show = function(req, res) {
 
 // Creates a new postboard in the DB.
 exports.create = function(req, res) {
-  Postboard.create(req.body, function(err, postboard) {
+  PostboardSheet.create(req.body, function(err, postboard) {
     if(err) { return handleError(res, err); }
     return res.json(201, postboard);
   });
@@ -31,7 +31,7 @@ exports.create = function(req, res) {
 // Updates an existing postboard in the DB.
 exports.update = function(req, res) {
   if(req.body._id) { delete req.body._id; }
-  Postboard.findById(req.params.id, function (err, postboard) {
+  PostboardSheet.findById(req.params.id, function (err, postboard) {
     if (err) { return handleError(res, err); }
     if(!postboard) { return res.send(404); }
     var updated = _.merge(postboard, req.body);
@@ -44,7 +44,7 @@ exports.update = function(req, res) {
 
 // Deletes a postboard from the DB.
 exports.destroy = function(req, res) {
-  Postboard.findById(req.params.id, function (err, postboard) {
+  PostboardSheet.findById(req.params.id, function (err, postboard) {
     if(err) { return handleError(res, err); }
     if(!postboard) { return res.send(404); }
     postboard.remove(function(err) {
