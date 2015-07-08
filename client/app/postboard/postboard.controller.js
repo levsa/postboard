@@ -7,8 +7,11 @@ angular.module('postboardApp')
   var canvas = new fabric.Canvas('canvas');
   $scope.canvas = canvas;
 
-  var sheet = '/files/2015-06-25/sheet-BAE285A1-638E-4544-A4E2-06941D1B19EC.json';
-  $http.get(sheet).success(function(sheetJson) {
+  var postboards = '/api/postboards';
+
+  $http.get(postboards).success(function(postboardsJson) {
+    console.log("json: " + postboardsJson);
+    var sheetJson = postboardsJson[0];
     $scope.sheetJson = sheetJson;
     $scope.postIts = [];
     sheetJson.clusters[0].notes.forEach(function (note) {
