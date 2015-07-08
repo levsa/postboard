@@ -13,11 +13,6 @@ var MetadataSchema = new Schema({
   }
 });
 
-//var PointSchema = new Schema({
-//  type: [Number],
-//  validate: function (val) { return val && val.length < 2; }
-//});
-
 var NoteSchema = new Schema({
   isDigitalNote: Boolean,
   index: Number,
@@ -39,8 +34,18 @@ var NoteSchema = new Schema({
     alpha: Number
   },
   corners: {
-    type: [Array],
-    validate: function (val) { return val && val.length < 4; }
+    type: [Array[Number]],
+    validate: function (val) {
+      if (val && val.length == 4) {
+        for (var i=0; i<4; i++) {
+          if (!val[i] || val[i].length != 2) {
+            console.log("Error in corner number " + (i + 1) + ", corner val=" + val);
+          }
+        }
+      } else {
+        console.log("Error in corner val=" + val);
+      }
+    }
   }
 });
 
