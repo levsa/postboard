@@ -2,23 +2,19 @@
 
 angular.module('postboardApp')
   .controller('MainCtrl', function ($scope, $http, socket) {
-    $scope.awesomeThings = [];
+    $scope.postboards = [];
 
-    $http.get('/api/things').success(function(awesomeThings) {
-      $scope.awesomeThings = awesomeThings;
+    $http.get('/api/postboards').success(function(postboards) {
+      $scope.postboards = postboards;
       socket.syncUpdates('thing', $scope.awesomeThings);
     });
 
-    $scope.addThing = function() {
-      if($scope.newThing === '') {
-        return;
-      }
-      $http.post('/api/things', { name: $scope.newThing });
-      $scope.newThing = '';
+    $scope.addPostboard = function() {
+      console.log("add postboard: ");
     };
 
-    $scope.deleteThing = function(thing) {
-      $http.delete('/api/things/' + thing._id);
+    $scope.deletePostboard = function(postboard) {
+      console.log("delete postboard: ", postboard._id);
     };
 
     $scope.$on('$destroy', function () {

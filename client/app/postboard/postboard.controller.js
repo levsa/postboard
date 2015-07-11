@@ -1,7 +1,7 @@
 'use strict';
 
 angular.module('postboardApp')
-.controller('PostboardCtrl', function ($scope, $window, $http, socket) {
+.controller('PostboardCtrl', function ($stateParams, $scope, $window, $http, socket) {
 
   var fabric = $window.fabric;
   var canvas = new fabric.Canvas('canvas');
@@ -12,6 +12,18 @@ angular.module('postboardApp')
      //updateBoard(postboardJson);
   });
 
+  $scope.$on('$destroy', function () {
+    socket.socket.removeAllListeners('postboard:save');
+    socket.socket.removeAllListeners('note:update');
+  });
+
+  socket.socket.on('note:update', function (note) {
+    console.log("note:update received", note._id);
+    $scope.canvas.deactivateAll();
+    updateNoteGroup(note);
+    $scope.canvas.renderAll();
+  });
+
   var updateNoteGroup = function (note) {
     var noteGroup = $scope.noteGroups[note._id];
     noteGroup.set({
@@ -20,14 +32,7 @@ angular.module('postboardApp')
       angle: note.layoutRotation
     });
     return noteGroup;
-  }
-
-  socket.socket.on('note:update', function (note) {
-    console.log("note:update received", note._id);
-    $scope.canvas.deactivateAll();
-    updateNoteGroup(note);
-    $scope.canvas.renderAll();
-  });
+  };
 
   var updateNote = function (noteGroup) {
     var note = $scope.notes[noteGroup._noteId];
@@ -39,7 +44,7 @@ angular.module('postboardApp')
 
   var saveNote = function (note) {
     var postboardId = $scope.sheetJson._id;
-    var postUrl = postboards + '/' + postboardId + '/notes/' + note._id;
+    var postUrl = postboardsApi + '/' + postboardId + '/notes/' + note._id;
     console.log("posting: ", postUrl);
     $http.put(postUrl, note).
       success(function (data, status, headers, config) {
@@ -90,7 +95,7 @@ angular.module('postboardApp')
 
   });
 
-  var postboards = '/api/postboards';
+  var postboardsApi = '/api/postboards/';
   var putNote = '/api/postboards/';
 
   var updateBoard = function (postboardJson) {
@@ -133,8 +138,10 @@ angular.module('postboardApp')
       });
     });
   };
-
-  $http.get(postboards).success(function(postboardsJson) {
-    updateBoard(postboardsJson[0]);
+  console.log($stateParams);
+  var url = postboardsApi + $stateParams.postboardId;
+  console.log("URL: ", url);
+  $http.get(url).success(function(postboard) {
+    updateBoard(postboard);
   });
 });

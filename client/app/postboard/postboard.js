@@ -4,7 +4,7 @@ angular.module('postboardApp')
   .config(function ($stateProvider) {
     $stateProvider
       .state('postboard', {
-        url: '/',
+        url: "/postboard/:postboardId",
         templateUrl: 'app/postboard/postboard.html',
         controller: 'PostboardCtrl'
       });

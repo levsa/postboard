@@ -44,14 +44,15 @@ module.exports = function (socketio) {
 
     socket.connectedAt = new Date();
 
+    var client_ip_address = socket.request.connection.remoteAddress;
     // Call onDisconnect.
     socket.on('disconnect', function () {
       onDisconnect(socket);
-      console.info('[%s] DISCONNECTED', socket.address);
+      console.info('[%s] DISCONNECTED!', client_ip_address); //socket.address);
     });
 
     // Call onConnect.
     onConnect(socket);
-    console.info('[%s] CONNECTED', socket.address);
+    console.info('[%s] CONNECTED!', client_ip_address); //socket.address);
   });
 };
