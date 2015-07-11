@@ -13,6 +13,10 @@ exports.register = function(socket) {
   PostboardSheet.schema.post('remove', function (doc) {
     onRemove(socket, doc);
   });
+  socket.on('note:update', function (note) {
+    console.log("note:update");
+    socket.broadcast.emit('note:update', note);
+  });
 }
 
 function onSave(socket, doc, cb) {
