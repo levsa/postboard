@@ -8,8 +8,8 @@ angular.module('postboardApp')
   $scope.canvas = canvas;
   canvas.selection = false;
 
-  socket.socket.on('postboard:save', function (postboardJson) {
-     //updateBoard(postboardJson);
+  socket.socket.on('postboard:save', function (/*postboard*/) {
+     //updateBoard(postboard);
   });
 
   $scope.$on('$destroy', function () {
@@ -18,7 +18,7 @@ angular.module('postboardApp')
   });
 
   socket.socket.on('note:update', function (note) {
-    console.log("note:update received", note._id);
+    console.log('note:update received', note._id);
     $scope.canvas.deactivateAll();
     updateNoteGroup(note);
     $scope.canvas.renderAll();
@@ -45,37 +45,37 @@ angular.module('postboardApp')
   var saveNote = function (note) {
     var postboardId = $scope.sheetJson._id;
     var postUrl = postboardsApi + '/' + postboardId + '/notes/' + note._id;
-    console.log("posting: ", postUrl);
+    console.log('posting: ', postUrl);
     $http.put(postUrl, note).
-      success(function (data, status, headers, config) {
-        console.log("put success: ", data, status);
+      success(function (data, status /*, headers, config */) {
+        console.log('put success: ', data, status);
       }).
-      error(function (data, status, headers, config) {
-        console.log("put error: ", data, status);
+      error(function (data, status /*, headers, config */) {
+        console.log('put error: ', data, status);
       });
   };
 
   $scope.canvas.on('object:selected', function (obj) {
     if (obj.target.type === 'notegroup') {
-      console.log("notegroup selected: ", obj.target.centerX, obj.target.centerY);
-      console.log("notegroup selected, left, top: ", obj.target.get('left'), obj.target.get('top'));
+      console.log('notegroup selected: ', obj.target.centerX, obj.target.centerY);
+      console.log('notegroup selected, left, top: ', obj.target.get('left'), obj.target.get('top'));
     } else {
-      console.log(obj.target.type + " selected: ", obj.target.centerX, obj.target.centerY);
-      console.log(obj.target.type + " selected, left, top: ", obj.target.get('left'), obj.target.get('top'));
+      console.log(obj.target.type + ' selected: ', obj.target.centerX, obj.target.centerY);
+      console.log(obj.target.type + ' selected, left, top: ', obj.target.get('left'), obj.target.get('top'));
     }
   });
 
   $scope.canvas.on('object:modified', function (obj) {
     if (obj.target.type === 'notegroup') {
-      console.log("object:modified");
+      console.log('object:modified');
       console.log(obj.target.type);
       console.log(obj);
       var note = updateNote(obj.target);
       saveNote(note);
       socket.socket.emit('note:update', note);
     } else {
-      console.log(obj.target.type + " modified: ", obj.target.centerX, obj.target.centerY);
-      console.log(obj.target.type + " modified, left, top: ", obj.target.get('left'), obj.target.get('top'));
+      console.log(obj.target.type + ' modified: ', obj.target.centerX, obj.target.centerY);
+      console.log(obj.target.type + ' modified, left, top: ', obj.target.get('left'), obj.target.get('top'));
     }
   });
 
@@ -96,7 +96,6 @@ angular.module('postboardApp')
   });
 
   var postboardsApi = '/api/postboards/';
-  var putNote = '/api/postboards/';
 
   var updateBoard = function (postboardJson) {
     console.log(postboardJson);
@@ -112,7 +111,7 @@ angular.module('postboardApp')
     Object.keys($scope.notes).forEach(function (noteId) {
       var note = $scope.notes[noteId];
       var imgUrl = 'files/2015-06-25/note-' + note.contentUUID + '-enhanced.jpg';
-      console.log("loading postit: " + imgUrl);
+      console.log('loading postit: ' + imgUrl);
       fabric.Image.fromURL(imgUrl, function(img) {
         img.set({
           width: 100,
@@ -140,7 +139,7 @@ angular.module('postboardApp')
   };
   console.log($stateParams);
   var url = postboardsApi + $stateParams.postboardId;
-  console.log("URL: ", url);
+  console.log('URL: ', url);
   $http.get(url).success(function(postboard) {
     updateBoard(postboard);
   });
