@@ -4,13 +4,13 @@
 
 'use strict';
 
-var Postboard = require('./postboard.model');
+var PostboardSheet = require('./postboard.model').PostboardSheet;
 
 exports.register = function(socket) {
-  Postboard.schema.post('save', function (doc) {
+  PostboardSheet.schema.post('save', function (doc) {
     onSave(socket, doc);
   });
-  Postboard.schema.post('remove', function (doc) {
+  PostboardSheet.schema.post('remove', function (doc) {
     onRemove(socket, doc);
   });
 }

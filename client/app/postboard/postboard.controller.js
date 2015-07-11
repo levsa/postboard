@@ -1,13 +1,15 @@
 'use strict';
 
 angular.module('postboardApp')
-.controller('PostboardCtrl', function ($scope, $window, $http) {
+.controller('PostboardCtrl', function ($scope, $window, $http, socket) {
 
   var fabric = $window.fabric;
   var canvas = new fabric.Canvas('canvas');
   $scope.canvas = canvas;
 
-
+  socket.socket.on('postboard:save', function (postboardJson) {
+     updateBoard(postboardJson);
+  });
 
 
   var NoteGroup = fabric.util.createClass(fabric.Group, {
@@ -31,17 +33,16 @@ angular.module('postboardApp')
   var postboards = '/api/postboards';
   var putNote = '/api/postboards/';
 
-  $http.get(postboards).success(function(postboardsJson) {
-    console.log("json: " + postboardsJson);
-    var sheetJson = postboardsJson[0];
-    $scope.sheetJson = sheetJson;
+  var updateBoard = function (postboardJson) {
+    console.log(postboardJson);
+    $scope.sheetJson = postboardJson;
+    $scope.canvas.clear();
     $scope.notes = {};
     $scope.noteGroups = {};
     $scope.sheetJson.clusters[0].notes.forEach(function (note) {
       var id = note._id;
       $scope.notes[id] = note;
     });
-
 
     Object.keys($scope.notes).forEach(function (noteId) {
       var note = $scope.notes[noteId];
@@ -84,8 +85,9 @@ angular.module('postboardApp')
         $scope.canvas.renderAll();
       });
     });
+  };
 
-
-      //socket.syncUpdates('thing', $scope.sheetJson);
+  $http.get(postboards).success(function(postboardsJson) {
+    updateBoard(postboardsJson[0]);
   });
 });
