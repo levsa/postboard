@@ -6,7 +6,7 @@
 'use strict';
 
 var User = require('../api/user/user.model');
-var PostboardSheet = require('../api/postboard/postboard.model');
+var PostboardSheet = require('../api/postboard/postboard.model').PostboardSheet;
 var fs = require('fs');
 
 User.find({}).remove(function() {

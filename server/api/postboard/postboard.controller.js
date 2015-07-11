@@ -1,7 +1,7 @@
 'use strict';
 
 var _ = require('lodash');
-var PostboardSheet = require('./postboard.model');
+var PostboardSheet = require('./postboard.model').PostboardSheet;
 
 // Get list of postboards
 exports.index = function(req, res) {
@@ -50,6 +50,44 @@ exports.destroy = function(req, res) {
     postboard.remove(function(err) {
       if(err) { return handleError(res, err); }
       return res.send(204);
+    });
+  });
+};
+
+exports.indexNotes = function(req, res) {
+  PostboardSheet.findById(req.params.id, function (err, postboard) {
+    if(err) { return handleError(res, err); }
+    if(!postboard) { return res.send(404); }
+    return res.json(postboard.clusters[0].notes);
+  });
+};
+
+exports.showNote = function(req, res) {
+  PostboardSheet.findById(req.params.id, function (err, postboard) {
+    if(err) { return handleError(res, err); }
+    if(!postboard) { return res.send(404); }
+
+    var note = postboard.clusters[0].notes.id(req.params.noteId);
+    if(!note) { return res.send(404); }
+    return res.json(note);
+  });
+};
+
+// Updates an existing postboard in the DB.
+exports.updateNote = function(req, res) {
+  if(req.body._id) { delete req.body._id; }
+  PostboardSheet.findById(req.params.id, function (err, postboard) {
+    if (err) { return handleError(res, err); }
+    if(!postboard) { return res.send(404); }
+
+    var note = postboard.clusters[0].notes.id(req.params.noteId);
+    if(!note) { return res.send(404); }
+
+    _.merge(note, req.body);
+
+    postboard.save(function (err) {
+      if (err) { return handleError(res, err); }
+      return res.json(200, postboard);
     });
   });
 };

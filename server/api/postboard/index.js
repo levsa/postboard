@@ -12,4 +12,9 @@ router.put('/:id', controller.update);
 router.patch('/:id', controller.update);
 router.delete('/:id', controller.destroy);
 
+router.get('/:id/notes/', controller.indexNotes);
+router.get('/:id/notes/:noteId', controller.showNote);
+
+router.put('/:id/notes/:noteId', controller.updateNote);
+
 module.exports = router;

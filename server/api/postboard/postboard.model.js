@@ -66,4 +66,9 @@ var SheetSchema = new Schema({
   clusters: [ClusterSchema]
 });
 
-module.exports = mongoose.model('PostboardSheet', SheetSchema);
+module.exports = {
+  'PostboardSheet': mongoose.model('PostboardSheet', SheetSchema),
+  'PostboardNote': mongoose.model('PostboardNote', NoteSchema)
+}
+
+
