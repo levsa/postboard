@@ -7,7 +7,8 @@ angular.module('postboardApp', [
   'btford.socket-io',
   'ui.router',
   'ui.bootstrap',
-  'dropzone'
+  'dropzone',
+  'ngFileUpload'
 ])
   .config(function ($stateProvider, $urlRouterProvider, $locationProvider, $httpProvider) {
     $urlRouterProvider

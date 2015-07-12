@@ -3,6 +3,38 @@
 var _ = require('lodash');
 var PostboardSheet = require('./postboard.model').PostboardSheet;
 
+var multer  = require('multer');
+
+exports.createUploadHandler = multer({
+  dest: './files/files/upload',
+  limits: {
+    fieldNameSize: 999999999,
+    fieldSize: 999999999
+  },
+  includeEmptyFields: true,
+  onError: function (error, next) {
+    console.log(error);
+    next(error);
+  },
+  onFileUploadStart: function(file) {
+    console.log('Starting ', file);
+  },
+  onFileUploadData: function(file, data) {
+    console.log('Got a chunk of data!');
+  },
+  onFileUploadComplete: function(file) {
+    console.log('Completed file!');
+  },
+  onParseStart: function() {
+    console.log('Starting to parse request!');
+  },
+  onParseEnd: function(req, next) {
+    console.log('Done parsing!');
+    next();
+  }
+});
+
+
 // Get list of postboards
 exports.index = function(req, res) {
   PostboardSheet.find(function (err, postboards) {
@@ -22,10 +54,13 @@ exports.show = function(req, res) {
 
 // Creates a new postboard in the DB.
 exports.create = function(req, res) {
-  PostboardSheet.create(req.body, function(err, postboard) {
-    if(err) { return handleError(res, err); }
-    return res.json(201, postboard);
-  });
+  console.info("CREATE: ", req.body);
+  console.info("CREATE: ", req.files);
+  // PostboardSheet.create(req.body, function(err, postboard) {
+  //   if(err) { return handleError(res, err); }
+  //   return res.json(201, postboard);
+  // });
+  return res.json(201, {message: "soon"});
 };
 
 // Updates an existing postboard in the DB.

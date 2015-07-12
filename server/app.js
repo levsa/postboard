@@ -10,7 +10,7 @@ process.env.NODE_ENV = process.env.NODE_ENV || 'development';
 var express = require('express');
 var mongoose = require('mongoose');
 var config = require('./config/environment');
-var morgan = require('morgan')
+var morgan = require('morgan');
 
 // Connect to database
 mongoose.connect(config.mongo.uri, config.mongo.options);
@@ -29,8 +29,8 @@ require('./config/socketio')(socketio);
 require('./config/express')(app);
 require('./routes')(app);
 
-app.use(morgan('combined'))
-mongoose.set('debug', true)
+app.use(morgan('combined'));
+mongoose.set('debug', true);
 
 // Start server
 server.listen(config.port, config.ip, function () {
