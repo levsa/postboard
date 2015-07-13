@@ -2,6 +2,7 @@
 
 var _ = require('lodash');
 var PostboardSheet = require('./postboard.model').PostboardSheet;
+var PostboardImporter = require('./postboard.importer');
 
 var multer  = require('multer');
 
@@ -60,7 +61,11 @@ exports.create = function(req, res) {
   //   if(err) { return handleError(res, err); }
   //   return res.json(201, postboard);
   // });
-  return res.json(201, {message: "soon"});
+  PostboardImporter.import(req.files, function (err, imported) {
+    if(err) { return res.send(400, err); }
+    console.log("IMPORTED:", imported);
+    return res.json(201, imported);
+  });
 };
 
 // Updates an existing postboard in the DB.

@@ -8,7 +8,9 @@ angular.module('postboardApp', [
   'ui.router',
   'ui.bootstrap',
   'dropzone',
-  'ngFileUpload'
+  'ngFileUpload',
+  'toaster',
+  'ngAnimate'
 ])
   .config(function ($stateProvider, $urlRouterProvider, $locationProvider, $httpProvider) {
     $urlRouterProvider

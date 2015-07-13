@@ -28,11 +28,11 @@ User.find({}).remove(function() {
 });
 
 PostboardSheet.find({}).remove(function() {
-  var filename = __dirname + '/../../files/files/2015-06-25/sheet-BAE285A1-638E-4544-A4E2-06941D1B19EC.json'
-  var sheetJson = JSON.parse(fs.readFileSync(filename, 'utf8'));
-
-  PostboardSheet.create(sheetJson, function () {
-      console.log('finished populating postboards');
-    }
-  );
+//  var filename = __dirname + '/../../files/files/2015-06-25/sheet-BAE285A1-638E-4544-A4E2-06941D1B19EC.json'
+//  var sheetJson = JSON.parse(fs.readFileSync(filename, 'utf8'));
+//
+//  PostboardSheet.create(sheetJson, function () {
+//      console.log('finished populating postboards');
+//    }
+//  );
 });

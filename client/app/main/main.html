@@ -1,5 +1,7 @@
 <div ng-include="'components/navbar/navbar.html'"></div>
 
+<toaster-container></toaster-container>
+
 <div class="container">
   <div class="row">
     <div class="col-lg-12">
@@ -23,7 +25,15 @@
     </p>
   </form>
 
-    <input type="file" ngf-select="onFileSelect($files)" multiple>
+  <!--    <input type="file" ngf-select="onFileSelect($files)" ngf-multiple="false"> -->
+
+   watching model:
+    <div class="btn btn-lg btn-success" ngf-select ng-model="files">Upload using model $watch</div>
+    Drop File:
+    <div ngf-drop ng-model="files" class="drop-box" ngf-select
+        ngf-drag-over-class="{accept:'dragover-accept', reject:'dragover-accept', delay:100}" ngf-multiple="false" ngf-allow-dir="false"
+        ngf-accept="'*.3csb'">Drop Post-it® Plus 3csb file here</div>
+    <div ngf-no-file-drop>File Drag/Drop is not supported for this browser</div>
 
 </div>
 
