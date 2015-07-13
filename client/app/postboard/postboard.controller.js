@@ -110,7 +110,7 @@ angular.module('postboardApp')
 
     Object.keys($scope.notes).forEach(function (noteId) {
       var note = $scope.notes[noteId];
-      var imgUrl = 'files/2015-06-25/note-' + note.contentUUID + '-enhanced.jpg';
+      var imgUrl = 'files/noteContents/' + $scope.sheetJson._id + '/note-' + note.contentUUID + '-enhanced.jpg';
       console.log('loading postit: ' + imgUrl);
       fabric.Image.fromURL(imgUrl, function(img) {
         img.set({

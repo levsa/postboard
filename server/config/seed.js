@@ -8,6 +8,8 @@
 var User = require('../api/user/user.model');
 var PostboardSheet = require('../api/postboard/postboard.model').PostboardSheet;
 var fs = require('fs');
+var fsExtra = require('fs-extra');
+var path = require('path');
 
 User.find({}).remove(function() {
   User.create({
@@ -28,11 +30,8 @@ User.find({}).remove(function() {
 });
 
 PostboardSheet.find({}).remove(function() {
-//  var filename = __dirname + '/../../files/files/2015-06-25/sheet-BAE285A1-638E-4544-A4E2-06941D1B19EC.json'
-//  var sheetJson = JSON.parse(fs.readFileSync(filename, 'utf8'));
-//
-//  PostboardSheet.create(sheetJson, function () {
-//      console.log('finished populating postboards');
-//    }
-//  );
+  var noteContentsDir = path.join(__dirname, '../../files/files/noteContents');
+  fsExtra.emptyDir(noteContentsDir, function (err) {
+    if (err) throw err;
+  });
 });

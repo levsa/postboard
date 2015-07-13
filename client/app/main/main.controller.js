@@ -26,7 +26,6 @@ angular.module('postboardApp')
     });
 
     $scope.onFileSelect = function (files) {
-      console.log("FILES: ", files);
       if (! files) {
         console.log("no files");
         return;
@@ -51,42 +50,27 @@ angular.module('postboardApp')
       }
     };
 
-    $scope.dropzoneConfig = {
-      'options': { // passed into the Dropzone constructor
-        'url': '/api/postboards'
-      },
-      'eventHandlers': {
-        'sending': function (file, xhr, formData) {
-          console.log("DROPZONE sending");
-        },
-        'success': function (file, response) {
-          console.log("DROPZONE sending success");
-        },
-        'error': function (file, errorMessage, xhr) {
-          console.log("DROPZONE sending error", errorMessage, xhr);
-          toaster.pop('error', 'Error', errorMessage);
-        }
-      }
-    };
-
     $http.get('/api/postboards').success(function(postboards) {
       $scope.postboards = postboards;
-      socket.syncUpdates('thing', $scope.awesomeThings);
+      socket.syncUpdates('postboard', $scope.postboards);
     });
 
-    $scope.addPostboard = function() {
-      if($scope.newPostboard === '') {
-        return;
+    $scope.deletePostboard = function (postboard) {
+      if (confirm('Delete board ' + postboard.name + '?')) {
+        console.log('delete postboard: ', postboard._id);
+        $http.delete('/api/postboards/' + postboard._id).
+          success(function () {
+            console.log('delete success ' + postboard._id);
+            $scope.popSuccess('Board ' + postboard.name + ' deleted');
+          }).
+          error(function (err) {
+            console.log('delete error: ', err);
+            $scope.popError('Board delete failed ' + err);
+          });
       }
-      console.log('add postboard: ', $scope.newPostboard);
-      $scope.newPostboard = '';
-    };
-
-    $scope.deletePostboard = function(postboard) {
-      console.log('delete postboard: ', postboard._id);
-    };
+    }
 
     $scope.$on('$destroy', function () {
-      socket.unsyncUpdates('thing');
+      socket.unsyncUpdates('postboard');
     });
   }]);

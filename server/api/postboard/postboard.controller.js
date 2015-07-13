@@ -87,9 +87,13 @@ exports.destroy = function(req, res) {
   PostboardSheet.findById(req.params.id, function (err, postboard) {
     if(err) { return handleError(res, err); }
     if(!postboard) { return res.send(404); }
+    var postboardId = postboard._id;
     postboard.remove(function(err) {
       if(err) { return handleError(res, err); }
-      return res.send(204);
+      PostboardImporter.removeFiles(postboardId, function (err) {
+        if (err) console.log(err);
+        return res.send(204);
+      });
     });
   });
 };
