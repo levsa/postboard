@@ -6,10 +6,17 @@
   <div class="row">
     <div class="col-lg-12">
       <ul class="btn-group" ng-repeat="postboard in postboards">
-        <li><div class="btn-group">
+
+        <li class="btn-group"><!--
+            <div class="btn-group">
             <a href="/postboard/{{postboard._id}}" tooltip="{{postboard.name}}" class="btn btn-lg btn-success" role="button">{{postboard.name}}</a>
             <button type="button" class="btn btn-lg btn-close" ng-click="deletePostboard(postboard)">&times;</button>
           </div>
+          -->
+            <div click-to-edit="postboard.name" on-saved="onPostboardNameSaved(postboard)"
+                on-close="deletePostboard(postboard)" click-to-edit-tooltip="postboard.name"
+                click-to-edit-url='/postboard/{{postboard._id}}'>
+            </div>
         </li>
       </ul>
     </div>

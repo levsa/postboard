@@ -25,6 +25,19 @@ angular.module('postboardApp')
       $scope.onFileSelect($scope.files);
     });
 
+    $scope.onPostboardNameSaved = function (postboard) {
+      console.log(postboard);
+      var postUrl = '/api/postboards/' + postboard._id;
+      console.log('posting: ', postUrl);
+      $http.put(postUrl, postboard).
+        success(function (data, status /*, headers, config */) {
+          console.log('put success: ', data, status);
+        }).
+        error(function (data, status /*, headers, config */) {
+          console.log('put error: ', data, status);
+        });
+    };
+
     $scope.onFileSelect = function (files) {
       if (! files) {
         console.log("no files");
