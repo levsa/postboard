@@ -154,7 +154,7 @@ exports.noteImage = function(req, res) {
       res.setHeader('Content-Type', 'image/jpeg');
       readStream.pipe(res);
     } else {
-      consol.log("File not found: " + source);
+      console.log("File not found: " + source);
       res.send(404, new Error("File not found: " + source));
     }
   });
