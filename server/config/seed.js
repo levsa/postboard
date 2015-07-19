@@ -8,7 +8,6 @@
 var User = require('../api/user/user.model');
 var PostboardSheet = require('../api/postboard/postboard.model').PostboardSheet;
 var fs = require('fs');
-var fsExtra = require('fs-extra');
 var path = require('path');
 
 User.find({}).remove(function() {
@@ -30,8 +29,5 @@ User.find({}).remove(function() {
 });
 
 PostboardSheet.find({}).remove(function() {
-  var noteContentsDir = path.join(__dirname, '../../files/files/noteContents');
-  fsExtra.emptyDir(noteContentsDir, function (err) {
-    if (err) throw err;
-  });
+  console.log("PostboardSheet seed not implemented");
 });

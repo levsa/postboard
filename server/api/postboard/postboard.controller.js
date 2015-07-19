@@ -3,11 +3,18 @@
 var _ = require('lodash');
 var PostboardSheet = require('./postboard.model').PostboardSheet;
 var PostboardImporter = require('./postboard.importer');
-
+var temp = require("temp").track();
 var multer  = require('multer');
+var mongoose = require("mongoose");
+var Grid = require('gridfs-stream');
+var GridFS = Grid(mongoose.connection.db, mongoose.mongo);
+
+var uploadDir = temp.path({prefix: "postboard-upload"});
+
+console.log("UPLOADDIR: " + uploadDir);
 
 exports.createUploadHandler = multer({
-  dest: './files/files/upload',
+  dest: uploadDir,
   limits: {
     fieldNameSize: 999999999,
     fieldSize: 999999999
@@ -133,6 +140,23 @@ exports.updateNote = function(req, res) {
       if (err) { return handleError(res, err); }
       return res.json(200, postboard);
     });
+  });
+};
+
+exports.noteImage = function(req, res) {
+  var source = PostboardImporter.noteFilenameOnGrid(req.params.id, req.params.noteUUID);
+  var gridOptions = {filename: source};
+  GridFS.exist(gridOptions, function (err, found) {
+    if(err) { return handleError(res, err); }
+    if (found) {
+      console.log("file found");
+      var readStream = GridFS.createReadStream(gridOptions);
+      res.setHeader('Content-Type', 'image/jpeg');
+      readStream.pipe(res);
+    } else {
+      consol.log("File not found: " + source);
+      res.send(404, new Error("File not found: " + source));
+    }
   });
 };
 

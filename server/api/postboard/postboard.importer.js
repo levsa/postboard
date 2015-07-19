@@ -1,15 +1,17 @@
 'use strict';
 
 var fs = require('fs');
-var fsExtra = require('fs-extra');
 var path = require('path');
 //var unzip = require('unzip');
 var unzip = require('node-unzip-2');
 var temp = require("temp").track();
-var path = require('path');
 var PostboardSheet = require('./postboard.model').PostboardSheet;
 
-var filesDir = __dirname + '/../../../files/files/noteContents';
+var mongoose = require("mongoose");
+var Grid = require('gridfs-stream');
+var GridFS = Grid(mongoose.connection.db, mongoose.mongo);
+
+var Q = require('q');
 
 var readJSON = function (dirPath, filename, cb) {
   return fs.readFile(path.join(dirPath, filename), 'utf8', function (err, data) {
@@ -21,8 +23,16 @@ var readJSON = function (dirPath, filename, cb) {
   });
 };
 
-var contentNotesDirForBoardId = function (postboardId) {
-  return path.join(filesDir, postboardId.toString());
+var noteFilename = function (noteContentUUID) {
+  return 'note-' + noteContentUUID + '-enhanced.jpg';
+};
+
+var noteFilenamePrefix = function (postboardId) {
+  return postboardId.toString() + "/";
+};
+
+exports.noteFilenameOnGrid = function (postboardId, noteContentUUID) {
+  return noteFilenamePrefix(postboardId) + noteFilename(noteContentUUID);
 }
 
 exports.import = function (files, cb) {
@@ -30,7 +40,7 @@ exports.import = function (files, cb) {
   var file = files.file;
   if (file.extension !== '3csb') { cb("Must be a 3csb file", {}); return; }
   var postboardCreated = null;
-  var dirCreated = null;
+  var filenamePrefix = null;
   temp.mkdir('postboard', function(err, dirPath) {
     if (err) return done(err);
     console.log('unpacking to ' + dirPath);
@@ -48,20 +58,35 @@ exports.import = function (files, cb) {
                 if (err) return done(err);
                 postboardCreated = postboard._id;
                 console.log('imported sheet ' + postboard._id);
-                var destDir = contentNotesDirForBoardId(postboard._id);
-                fsExtra.ensureDir(destDir, function (err) {
-                  if (err) return done(err);
-                  dirCreated = destDir;
-                  metadata.noteContentUUIDs.forEach(function (noteContentUUID) {
-                    var filename = 'note-' + noteContentUUID + '-enhanced.jpg';
-                    var source = path.join(dirPath, filename);
-                    var target = path.join(destDir, filename);
-                    fsExtra.move(source, target, function (err) {
-                      if (err) return done(err);
-                      temp.cleanupSync();
-                      done();
-                    });
+
+                filenamePrefix = noteFilenamePrefix(postboard._id);
+
+                var promises = metadata.noteContentUUIDs.map(function (noteContentUUID) {
+                  var deferred = Q.defer();
+                  var filename = noteFilename(noteContentUUID);
+                  var source = path.join(dirPath, filename);
+                  var target = filenamePrefix + filename;
+                  var writeStream = GridFS.createWriteStream({filename: target});
+                  fs.createReadStream(source).pipe(writeStream);
+                  writeStream.on('close', function (file) {
+                    deferred.resolve(file);
                   });
+                  return deferred.promise;
+                });
+
+                Q.all(promises)
+                .then(function (files) {
+                  files.forEach(function (file) {
+                    console.log("stored file: " + file.filename);
+                  });
+                  done();
+                })
+                .fail(function (err) {
+                  console.log("promise fail: ", err);
+                  done(err);
+                })
+                .fin(function () {
+                  temp.cleanupSync();
                 });
               });
             });
@@ -99,14 +124,8 @@ exports.import = function (files, cb) {
             }
           });
         }
-        if (dirCreated) {
-          fsExtra.remove(dirCreated, function (err) {
-            if (err) {
-              console.log(err);
-            } else {
-              console.log('rolled back ' + dirCreated);
-            }
-          });
+        if (filenamePrefix) {
+          exports.removeFiles(postboardCreated, function () {});
         }
       }
       cb(err, {});
@@ -116,9 +135,31 @@ exports.import = function (files, cb) {
 }
 
 exports.removeFiles = function (postboardId, cb) {
-  fsExtra.remove(contentNotesDirForBoardId(postboardId), function (err) {
-    cb(err);
-  });
+  GridFS.files.find({filename: new RegExp(noteFilenamePrefix(postboardId) + ".*")}).toArray(function (err, files) {
+    if (err) {
+      console.log("removeFiles: err: ", err);
+      cb(err, {});
+    }
+    var promises = files.map(function (file) {
+      var deferred = Q.defer();
+      GridFS.remove({filename: file.filename}, function (err) {
+        if (err) {
+          console.log("Error removing ", file.filename);
+          deferred.reject(err);
+        } else {
+          console.log("Removed ", file.filename);
+          deferred.resolve();
+        }
+      });
+    });
+    Q.all(promises)
+    .then(function () {
+      cb(null);
+    })
+    .fail(function (err) {
+      cb(err);
+    })
+  })
 };
 
 

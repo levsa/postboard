@@ -17,4 +17,6 @@ router.get('/:id/notes/:noteId', controller.showNote);
 
 router.put('/:id/notes/:noteId', controller.updateNote);
 
+router.get('/:id/noteImage/:noteUUID', controller.noteImage);
+
 module.exports = router;
