@@ -38,6 +38,7 @@ exports.noteFilenameOnGrid = function (postboardId, noteContentUUID) {
 exports.import = function (files, cb) {
   if (!files || !files.file) { cb("Upload failed", {}); return; }
   var file = files.file;
+  console.log("Importing: ", path.resolve(file.path));
   if (file.extension !== '3csb') { cb("Must be a 3csb file", {}); return; }
   var postboardCreated = null;
   var filenamePrefix = null;
@@ -151,12 +152,15 @@ exports.removeFiles = function (postboardId, cb) {
           deferred.resolve();
         }
       });
+      return deferred.promise;
     });
     Q.all(promises)
     .then(function () {
+      console.log("end: remove done");
       cb(null);
     })
     .fail(function (err) {
+      console.log("end: remove fail", err);
       cb(err);
     })
   })
