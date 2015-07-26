@@ -1,5 +1,5 @@
 var passport = require('passport');
-var GoogleStrategy = require('passport-google-oauth').OAuth2Strategy;
+var GoogleStrategy = require('passport-google-oauth2').Strategy;
 
 exports.setup = function (User, config) {
   passport.use(new GoogleStrategy({
