@@ -63,6 +63,8 @@ var SheetSchema = new Schema({
   creationDate: Date,
   UUID: String,
   name: String,
+  owner: {type: mongoose.Schema.Types.ObjectId, ref: 'User'},
+  editableBy: [{type: mongoose.Schema.Types.ObjectId, ref: 'User'}],
   clusters: [ClusterSchema]
 });
 
