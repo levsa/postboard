@@ -31,6 +31,7 @@ angular.module('postboardApp')
       top: note.centerY,
       angle: note.layoutRotation
     });
+    noteGroup.setCoords();
     return noteGroup;
   };
 
